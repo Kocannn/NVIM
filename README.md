@@ -49,7 +49,8 @@ Pastikan tools ini tersedia:
 - init.lua: entrypoint Neovim
 - lua/chadrc.lua: konfigurasi UI base46/NvChad
 - lua/kocan/core: options, keymaps, autocmd
-- lua/kocan/plugins/init.lua: daftar plugin utama
+- lua/kocan/plugins/init.lua: aggregator module plugin
+- lua/kocan/plugins/specs: daftar plugin per kategori (core, lsp, completion, ai, search, ui)
 - lua/kocan/plugins/configs: konfigurasi per-plugin
 
 ## LSP + Mason (Auto Enable)
