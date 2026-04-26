@@ -90,8 +90,16 @@ return {
 		end,
 	},
 	{
+		"williamboman/mason-lspconfig.nvim",
+		dependencies = { "williamboman/mason.nvim" },
+		opts = function()
+			return require("kocan.plugins.configs.mason-lspconfig")
+		end,
+	},
+	{
 		"neovim/nvim-lspconfig",
 		event = "User FilePost",
+		dependencies = { "williamboman/mason-lspconfig.nvim" },
 		config = function()
 			require("kocan.plugins.configs.lspconfig").defaults()
 		end,
@@ -132,7 +140,6 @@ return {
 				end,
 			},
 			{
-				"supermaven-nvim/supermaven-nvim",
 				"saadparwaiz1/cmp_luasnip",
 				"hrsh7th/cmp-nvim-lua",
 				"hrsh7th/cmp-nvim-lsp",
@@ -284,17 +291,13 @@ return {
 			},
 		},
 	},
-
-	-- Treesitter
 	{
 		"nvim-treesitter/nvim-treesitter",
-		cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleInfo" },
+		branch = "main",
 		build = ":TSUpdate",
-		opts = function()
-			return require("kocan.plugins.configs.treesitter")
-		end,
-		config = function(_, opts)
-			require("nvim-treesitter.configs").setup(opts)
+		lazy = false,
+		config = function()
+			require("kocan.plugins.configs.treesitter").setup()
 		end,
 	},
 
@@ -306,13 +309,6 @@ return {
 		event = "InsertEnter",
 		config = function()
 			require("copilot").setup(require("kocan.plugins.configs.copilot"))
-		end,
-	},
-	{
-		"zbirenbaum/copilot-cmp",
-		dependencies = { "zbirenbaum/copilot.lua" },
-		config = function()
-			require("copilot_cmp").setup()
 		end,
 	},
 
@@ -495,21 +491,20 @@ return {
 				desc = "[F]ind [D]iagnostics",
 			},
 		},
-
-		{
-			"Exafunction/codeium.nvim",
-			cmd = "Codeium",
-			event = "InsertEnter",
-			build = ":Codeium Auth",
-			opts = {
-				enable_cmp_source = true, -- tetap aktif di cmp
-				virtual_text = {
-					enabled = false, -- matikan inline ghost text
-					key_bindings = {
-						accept = false, -- sudah dihandle cmp
-						next = "<M-]>",
-						prev = "<M-[>",
-					},
+	},
+	{
+		"Exafunction/codeium.nvim",
+		cmd = "Codeium",
+		event = "InsertEnter",
+		build = ":Codeium Auth",
+		opts = {
+			enable_cmp_source = true,
+			virtual_text = {
+				enabled = false,
+				key_bindings = {
+					accept = false,
+					next = "<M-]>",
+					prev = "<M-[>",
 				},
 			},
 		},

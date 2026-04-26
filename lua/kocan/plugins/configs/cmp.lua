@@ -3,6 +3,7 @@ local cmp = require("cmp")
 
 local options = {
 	completion = { completeopt = "menu,menuone,noselect" },
+	preselect = cmp.PreselectMode.None,
 
 	snippet = {
 		expand = function(args)
@@ -44,15 +45,31 @@ local options = {
 		-- end, { "i", "s" }),
 	},
 
-	sources = {
-		{ name = "supermaven" },
-		{ name = "copilot" },
-		{ name = "codeium" },
-		{ name = "nvim_lsp" },
-		{ name = "luasnip" },
-		{ name = "buffer" },
-		{ name = "nvim_lua" },
-		{ name = "path" },
+	sources = cmp.config.sources({
+		{ name = "copilot", group_index = 1, priority = 1000 },
+		{ name = "supermaven", group_index = 1, priority = 950 },
+		{ name = "codeium", group_index = 1, priority = 900 },
+	}, {
+		{ name = "nvim_lsp", group_index = 2 },
+		{ name = "luasnip", group_index = 2 },
+		{ name = "nvim_lua", group_index = 2 },
+		{ name = "path", group_index = 2 },
+		{ name = "buffer", group_index = 2 },
+	}),
+
+	sorting = {
+		priority_weight = 2,
+		comparators = {
+			cmp.config.compare.offset,
+			cmp.config.compare.exact,
+			cmp.config.compare.score,
+			cmp.config.compare.recently_used,
+			cmp.config.compare.locality,
+			cmp.config.compare.kind,
+			cmp.config.compare.sort_text,
+			cmp.config.compare.length,
+			cmp.config.compare.order,
+		},
 	},
 }
 

@@ -1,9 +1,9 @@
-require("copilot").setup({
+return {
 	suggestion = {
 		enabled = false,
 		auto_trigger = false,
 		keymap = {
-			accept = "<tab>", -- handled by nvim-cmp / blink.cmp
+			accept = "<tab>",
 			next = "<M-]>",
 			prev = "<M-[>",
 		},
@@ -13,4 +13,4 @@ require("copilot").setup({
 		markdown = true,
 		help = true,
 	},
-})
+}
