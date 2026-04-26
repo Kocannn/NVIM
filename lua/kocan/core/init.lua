@@ -1,1 +1,1 @@
-require("kocan.core.options")
+require("kocan.layers.core").setup()

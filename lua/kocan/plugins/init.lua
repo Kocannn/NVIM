@@ -1,16 +1,16 @@
-local modules = {
-	"kocan.plugins.specs.core",
-	"kocan.plugins.specs.lsp",
-	"kocan.plugins.specs.completion",
-	"kocan.plugins.specs.ai",
-	"kocan.plugins.specs.search",
-	"kocan.plugins.specs.ui",
-}
+local modules = require("kocan.config").plugins.modules
 
 local plugins = {}
 
 for _, module in ipairs(modules) do
-	vim.list_extend(plugins, require(module))
+	local ok, spec = pcall(require, module)
+	if ok and type(spec) == "table" then
+		vim.list_extend(plugins, spec)
+	else
+		vim.schedule(function()
+			vim.notify("Failed loading plugin module: " .. module, vim.log.levels.WARN)
+		end)
+	end
 end
 
 return plugins

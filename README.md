@@ -48,10 +48,33 @@ Pastikan tools ini tersedia:
 
 - init.lua: entrypoint Neovim
 - lua/chadrc.lua: konfigurasi UI base46/NvChad
+- lua/kocan/config/init.lua: pusat konfigurasi (mapleader, base46 cache, urutan module plugin)
+- lua/kocan/layers/bootstrap.lua: bootstrap lazy.nvim + global startup
+- lua/kocan/layers/plugins.lua: load lazy + theme cache
+- lua/kocan/layers/core.lua: load options, autocmds, keymaps
 - lua/kocan/core: options, keymaps, autocmd
 - lua/kocan/plugins/init.lua: aggregator module plugin
 - lua/kocan/plugins/specs: daftar plugin per kategori (core, lsp, completion, ai, search, ui)
 - lua/kocan/plugins/configs: konfigurasi per-plugin
+
+## Arsitektur Layered
+
+Arsitektur sekarang dibagi menjadi layer yang jelas:
+1. bootstrap layer: menyiapkan runtime dan lazy.nvim
+2. plugin layer: memuat plugin dan tema
+3. core layer: memuat opsi editor, autocmd, keymap
+
+Keuntungan:
+- file lebih kecil dan fokus
+- gampang debug karena boundary antar layer jelas
+- gampang kustom karena daftar module plugin ada di satu file config
+
+## Cara Kustom Cepat
+
+Untuk mengaktifkan/menonaktifkan atau mengubah urutan module plugin, edit file:
+- lua/kocan/config/init.lua
+
+Contoh: Anda bisa menghapus sementara module AI dari list `plugins.modules` tanpa menyentuh file lain.
 
 ## LSP + Mason (Auto Enable)
 
