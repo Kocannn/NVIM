@@ -24,37 +24,81 @@ local options = {
 			select = false,
 		}),
 
-		-- ["<Tab>"] = cmp.mapping(function(fallback)
-		-- 	if cmp.visible() then
-		-- 		cmp.select_next_item()
-		-- 	elseif require("luasnip").expand_or_jumpable() then
-		-- 		require("luasnip").expand_or_jump()
-		-- 	else
-		-- 		fallback()
-		-- 	end
-		-- end, { "i", "s" }),
-		--
-		-- ["<S-Tab>"] = cmp.mapping(function(fallback)
-		-- 	if cmp.visible() then
-		-- 		cmp.select_prev_item()
-		-- 	elseif require("luasnip").jumpable(-1) then
-		-- 		require("luasnip").jump(-1)
-		-- 	else
-		-- 		fallback()
-		-- 	end
-		-- end, { "i", "s" }),
+		["<Tab>"] = cmp.mapping(function(fallback)
+			if cmp.visible() then
+				cmp.select_next_item()
+			elseif require("luasnip").expand_or_jumpable() then
+				require("luasnip").expand_or_jump()
+			else
+				fallback()
+			end
+		end, { "i", "s" }),
+
+		["<S-Tab>"] = cmp.mapping(function(fallback)
+			if cmp.visible() then
+				cmp.select_prev_item()
+			elseif require("luasnip").jumpable(-1) then
+				require("luasnip").jump(-1)
+			else
+				fallback()
+			end
+		end, { "i", "s" }),
+	},
+
+	formatting = {
+		format = function(entry, item)
+			-- Get NvChad's default formatting (includes lspkind icons and colors)
+			local nvchad_fmt = require("nvchad.cmp").formatting.format(entry, item)
+
+			-- Custom AI and Source Icons
+			local source_icons = {
+				copilot = " Copilot",
+				supermaven = " Supermaven",
+				codeium = " Codeium",
+				nvim_lsp = "λ LSP",
+				luasnip = "⋗ Snippet",
+				buffer = "Ω Buffer",
+				path = "🖫 Path",
+				nvim_lua = "Π Lua",
+			}
+
+			local source = entry.source.name
+			local source_text = source_icons[source] or source
+
+			if nvchad_fmt.menu then
+				nvchad_fmt.menu = string.format("%s  [%s]", nvchad_fmt.menu, source_text)
+			else
+				nvchad_fmt.menu = string.format("  [%s]", source_text)
+			end
+
+			return nvchad_fmt
+		end,
+	},
+
+	window = {
+		completion = cmp.config.window.bordered({
+			border = "rounded",
+			winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder,CursorLine:PmenuSel,Search:None",
+		}),
+		documentation = cmp.config.window.bordered({
+			border = "rounded",
+			winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder,CursorLine:PmenuSel,Search:None",
+		}),
+	},
+
+	experimental = {
+		ghost_text = true,
 	},
 
 	sources = cmp.config.sources({
-		{ name = "copilot", group_index = 1, priority = 1000 },
-		{ name = "supermaven", group_index = 1, priority = 950 },
-		{ name = "codeium", group_index = 1, priority = 900 },
-	}, {
-		{ name = "nvim_lsp", group_index = 2 },
-		{ name = "luasnip", group_index = 2 },
-		{ name = "nvim_lua", group_index = 2 },
-		{ name = "path", group_index = 2 },
-		{ name = "buffer", group_index = 2 },
+		{ name = "copilot", priority = 1000 },
+		{ name = "supermaven", priority = 950 },
+		{ name = "codeium", priority = 900 },
+		{ name = "nvim_lsp", priority = 800 },
+		{ name = "luasnip", priority = 700 },
+		{ name = "nvim_lua", priority = 600 },
+		{ name = "path", priority = 500 },
+		{ name = "buffer", priority = 400 },
 	}),
 
 	sorting = {
@@ -73,4 +117,4 @@ local options = {
 	},
 }
 
-return vim.tbl_deep_extend("force", options, require("nvchad.cmp"))
+return vim.tbl_deep_extend("force", require("nvchad.cmp"), options)
