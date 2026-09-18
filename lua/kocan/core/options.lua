@@ -4,6 +4,10 @@ local o = vim.o
 local g = vim.g
 
 -------------------------------------- options ------------------------------------------
+
+o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
+
+
 o.laststatus = 3
 o.showmode = false
 

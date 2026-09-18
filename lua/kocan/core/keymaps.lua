@@ -27,7 +27,7 @@ map("n", "<C-s>", "<cmd>w<CR>", { desc = "general save file" })
 map("n", "<C-c>", "<cmd>%y+<CR>", { desc = "general copy whole file" })
 
 map("n", "<leader>fm", function()
-	require("conform").format({ lsp_fallback = true })
+  require("conform").format({ lsp_fallback = true })
 end, { desc = "general format file" })
 
 -- global lsp mappings
@@ -37,15 +37,15 @@ map("n", "<leader>ds", vim.diagnostic.setloclist, { desc = "LSP diagnostic locli
 map("n", "<leader>bn", "<cmd>enew<CR>", { desc = "buffer new" })
 
 map("n", "<tab>", function()
-	require("nvchad.tabufline").next()
+  require("nvchad.tabufline").next()
 end, { desc = "buffer goto next" })
 
 map("n", "<S-tab>", function()
-	require("nvchad.tabufline").prev()
+  require("nvchad.tabufline").prev()
 end, { desc = "buffer goto prev" })
 
 map("n", "<leader>x", function()
-	require("nvchad.tabufline").close_buffer()
+  require("nvchad.tabufline").close_buffer()
 end, { desc = "buffer close" })
 
 -- Comment
@@ -66,15 +66,15 @@ map("n", "<leader>gt", "<cmd>Telescope git_status<CR>", { desc = "telescope git 
 map("n", "<leader>pt", "<cmd>Telescope terms<CR>", { desc = "telescope pick hidden term" })
 
 map("n", "<leader>th", function()
-	require("nvchad.themes").open()
+  require("nvchad.themes").open()
 end, { desc = "telescope nvchad themes" })
 
 map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "telescope find files" })
 map(
-	"n",
-	"<leader>fa",
-	"<cmd>Telescope find_files follow=true no_ignore=true hidden=true<CR>",
-	{ desc = "telescope find all files" }
+  "n",
+  "<leader>fa",
+  "<cmd>Telescope find_files follow=true no_ignore=true hidden=true<CR>",
+  { desc = "telescope find all files" }
 )
 
 -- terminal
@@ -82,55 +82,55 @@ map("t", "<A-j>", "<C-\\><C-N>", { desc = "terminal escape terminal mode" })
 
 -- new terminals
 map("n", "<leader>h", function()
-	require("nvchad.term").new({ pos = "sp" })
+  require("nvchad.term").new({ pos = "sp" })
 end, { desc = "terminal new horizontal term" })
 
 map("n", "<leader>v", function()
-	require("nvchad.term").new({ pos = "vsp" })
+  require("nvchad.term").new({ pos = "vsp" })
 end, { desc = "terminal new vertical term" })
 
 -- toggleable
 map({ "n", "t" }, "<A-v>", function()
-	require("nvchad.term").toggle({ pos = "vsp", id = "vtoggleTerm" })
+  require("nvchad.term").toggle({ pos = "vsp", id = "vtoggleTerm" })
 end, { desc = "terminal toggleable vertical term" })
 
 map({ "n", "t" }, "<A-h>", function()
-	require("nvchad.term").toggle({ pos = "sp", id = "htoggleTerm" })
+  require("nvchad.term").toggle({ pos = "sp", id = "htoggleTerm" })
 end, { desc = "terminal toggleable horizontal term" })
 
 map({ "n", "t" }, "<A-i>", function()
-	require("nvchad.term").toggle({ pos = "float", id = "floatTerm" })
+  require("nvchad.term").toggle({ pos = "float", id = "floatTerm" })
 end, { desc = "terminal toggle floating term" })
 
 -- whichkey
 map("n", "<leader>wK", "<cmd>WhichKey <CR>", { desc = "whichkey all keymaps" })
 
 map("n", "<leader>wk", function()
-	vim.cmd("WhichKey " .. vim.fn.input("WhichKey: "))
+  vim.cmd("WhichKey " .. vim.fn.input("WhichKey: "))
 end, { desc = "whichkey query lookup" })
 
 -- Diagnostics
 map("n", "<C-j>", function()
-	vim.diagnostic.goto_next()
+  vim.diagnostic.goto_next()
 end, opts)
 
 -- lazygit
 if vim.fn.executable("lazygit") == 1 then
-	map("n", "<leader>gg", function()
-		Snacks.lazygit({ cwd = vim.loop.cwd() })
-	end, { desc = "Lazygit (Root Dir)" })
-	map("n", "<leader>gG", function()
-		Snacks.lazygit()
-	end, { desc = "Lazygit (cwd)" })
-	map("n", "<leader>gf", function()
-		Snacks.picker.git_log_file()
-	end, { desc = "Git Current File History" })
-	map("n", "<leader>gl", function()
-		Snacks.picker.git_log({ cwd = LazyVim.root.git() })
-	end, { desc = "Git Log" })
-	map("n", "<leader>gL", function()
-		Snacks.picker.git_log()
-	end, { desc = "Git Log (cwd)" })
+  map("n", "<leader>gg", function()
+    Snacks.lazygit({ cwd = vim.loop.cwd() })
+  end, { desc = "Lazygit (Root Dir)" })
+  map("n", "<leader>gG", function()
+    Snacks.lazygit()
+  end, { desc = "Lazygit (cwd)" })
+  map("n", "<leader>gf", function()
+    Snacks.picker.git_log_file()
+  end, { desc = "Git Current File History" })
+  map("n", "<leader>gl", function()
+    Snacks.picker.git_log({ cwd = LazyVim.root.git() })
+  end, { desc = "Git Log" })
+  map("n", "<leader>gL", function()
+    Snacks.picker.git_log()
+  end, { desc = "Git Log (cwd)" })
 end
 
 -- Resize window
