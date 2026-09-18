@@ -4,10 +4,21 @@ local map = vim.keymap.set
 -- export on_attach & capabilities
 -- This section (M.on_attach, M.on_init, M.capabilities)
 -- stays exactly the same.
-M.on_attach = function(_, bufnr)
+M.on_attach = function(client, bufnr)
 	local function opts(desc)
 		return { buffer = bufnr, desc = "LSP " .. desc }
 	end
+
+	-- Enable inlay hints if supported
+	if client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
+		vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+	end
+
+	map("n", "<leader>lh", function()
+		if vim.lsp.inlay_hint then
+			vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr }), { bufnr = bufnr })
+		end
+	end, opts("Toggle Inlay Hints"))
 
 	map("n", "gD", vim.lsp.buf.declaration, opts("Go to declaration"))
 	map("n", "gd", vim.lsp.buf.definition, opts("Go to definition"))

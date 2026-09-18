@@ -36,11 +36,11 @@ map("n", "<leader>ds", vim.diagnostic.setloclist, { desc = "LSP diagnostic locli
 -- tabufline
 map("n", "<leader>bn", "<cmd>enew<CR>", { desc = "buffer new" })
 
-map("n", "<tab>", function()
+map("n", "<S-l>", function()
   require("nvchad.tabufline").next()
 end, { desc = "buffer goto next" })
 
-map("n", "<S-tab>", function()
+map("n", "<S-h>", function()
   require("nvchad.tabufline").prev()
 end, { desc = "buffer goto prev" })
 
@@ -64,6 +64,7 @@ map("n", "<leader>fz", "<cmd>Telescope current_buffer_fuzzy_find<CR>", { desc = 
 map("n", "<leader>cm", "<cmd>Telescope git_commits<CR>", { desc = "telescope git commits" })
 map("n", "<leader>gt", "<cmd>Telescope git_status<CR>", { desc = "telescope git status" })
 map("n", "<leader>pt", "<cmd>Telescope terms<CR>", { desc = "telescope pick hidden term" })
+map("n", "<leader>ft", "<cmd>TodoTelescope<CR>", { desc = "telescope find todos" })
 
 map("n", "<leader>th", function()
   require("nvchad.themes").open()
