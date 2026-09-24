@@ -1,7 +1,7 @@
 dofile(vim.g.base46_cache .. "mason")
 
 return {
-  PATH = "skip",
+  PATH = "prepend",
 
   ui = {
     icons = {

@@ -47,6 +47,12 @@ end
 
 M.capabilities = vim.lsp.protocol.make_client_capabilities()
 
+-- Merge capabilities dari cmp-nvim-lsp jika tersedia
+local ok, cmp_lsp = pcall(require, "cmp_nvim_lsp")
+if ok then
+	M.capabilities = vim.tbl_deep_extend("force", M.capabilities, cmp_lsp.default_capabilities())
+end
+
 M.capabilities.textDocument.completion.completionItem = {
 	documentationFormat = { "markdown", "plaintext" },
 	snippetSupport = true,
@@ -65,6 +71,7 @@ M.capabilities.textDocument.completion.completionItem = {
 	},
 }
 
+-- Server yang di-manage oleh Mason (ensure_installed)
 M.servers = {
 	"html",
 	"cssls",
@@ -72,21 +79,37 @@ M.servers = {
 	"ts_ls",
 	"lua_ls",
 	"gopls",
-	"pbls",
-	-- "stimulus_ls",
-	"prosemd_lsp",
 	"golangci_lint_ls",
-	"laravel_ls",
 	"ast_grep",
-	-- "intelephense",
+	"phpantom_lsp",
+}
+
+-- Server kustom yang tidak di-manage Mason (setup manual)
+M.custom_servers = {
+	"laravel_lsp",
 }
 
 ---
 -- REFACTORED SECTION
 ---
 M.defaults = function()
+	vim.api.nvim_create_user_command("LspInfo", "checkhealth vim.lsp", {})
+	vim.api.nvim_create_user_command("LspRestart", function()
+		for _, client in ipairs(vim.lsp.get_clients()) do
+			client:stop(true)
+		end
+
+		vim.defer_fn(function()
+			vim.cmd("silent! edit")
+			print("LSP Restarted!")
+		end, 300)
+	end, {})
+
 	dofile(vim.g.base46_cache .. "lsp")
 	require("nvchad.lsp").diagnostic_config()
+
+	-- NOTE: vim.lsp.handlers deprecated di Neovim 0.11+
+	-- Border untuk hover/signatureHelp sudah di-handle via vim.lsp.buf config
 
 	-- Shared/default configuration for all servers.
 	local default_config = {
@@ -102,10 +125,7 @@ M.defaults = function()
 			return
 		end
 
-		local config = default_config
-		if extra_config then
-			config = vim.tbl_deep_extend("force", default_config, extra_config)
-		end
+		local config = vim.tbl_deep_extend("force", default_config, extra_config or {})
 
 		vim.lsp.config(server_name, config)
 		vim.lsp.enable(server_name)
@@ -134,6 +154,18 @@ M.defaults = function()
 		},
 	}
 
+	local laravel_lsp_config = {
+		cmd = { "laravel-lsp" },
+		filetypes = { "php", "blade" },
+		root_dir = function(bufnr, on_dir)
+			local root = vim.fs.root(bufnr, "artisan")
+			if root then
+				on_dir(root)
+			end
+		end,
+	}
+
+	-- Enable semua Mason-managed servers
 	for _, lsp in ipairs(M.servers) do
 		if lsp == "lua_ls" then
 			enable_server(lsp, lua_ls_config)
@@ -142,36 +174,14 @@ M.defaults = function()
 		end
 	end
 
-	-- Also enable servers installed by Mason, including newly installed ones.
-	local ok_registry, mason_registry = pcall(require, "mason-registry")
-	local ok_mappings, mason_mappings = pcall(require, "mason-lspconfig.mappings.server")
-
-	if not (ok_registry and ok_mappings) then
-		return
-	end
-
-	local function enable_server_from_package(package_name)
-		local server_name = mason_mappings.package_to_lspconfig[package_name]
-		if not server_name then
-			return
-		end
-
-		if server_name == "lua_ls" then
-			enable_server(server_name, lua_ls_config)
+	-- Enable custom servers (tidak di-manage Mason)
+	for _, lsp in ipairs(M.custom_servers) do
+		if lsp == "laravel_lsp" then
+			enable_server(lsp, laravel_lsp_config)
 		else
-			enable_server(server_name)
+			enable_server(lsp)
 		end
 	end
-
-	for _, pkg in ipairs(mason_registry.get_installed_packages()) do
-		enable_server_from_package(pkg.name)
-	end
-
-	mason_registry:on("package:install:success", function(pkg)
-		vim.schedule(function()
-			enable_server_from_package(pkg.name)
-		end)
-	end)
 end
 
 return M

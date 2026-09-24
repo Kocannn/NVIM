@@ -1,4 +1,3 @@
-vim.cmd("let g:netrw_liststyle = 3")
 local opt = vim.opt
 local o = vim.o
 local g = vim.g
@@ -63,3 +62,10 @@ vim.env.PATH = table.concat({ vim.fn.stdpath("data"), "mason", "bin" }, sep) .. 
 o.wrap = false
 
 vim.opt.relativenumber = true
+
+-- Add Blade filetype detection for Laravel
+vim.filetype.add({
+  pattern = {
+    ['.*%.blade%.php'] = 'blade',
+  },
+})

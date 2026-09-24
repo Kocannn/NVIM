@@ -1,4 +1,4 @@
-require("gitsigns").setup({
+return {
 	signs = {
 		add = { text = "┃" },
 		change = { text = "┃" },
@@ -111,4 +111,4 @@ require("gitsigns").setup({
 		-- Text object
 		map({ "o", "x" }, "ih", gitsigns.select_hunk)
 	end,
-})
+}

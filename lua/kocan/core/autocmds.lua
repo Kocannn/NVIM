@@ -36,3 +36,10 @@ autocmd("TermOpen", {
 		end
 	end,
 })
+-- Enable Treesitter highlight for Blade
+autocmd("FileType", {
+  pattern = "blade",
+  callback = function()
+    pcall(vim.treesitter.start)
+  end,
+})

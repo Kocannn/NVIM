@@ -236,7 +236,7 @@ return {
 					end
 					if executing or status == "starting" or status == "restarting" then
 						local frames = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
-						local frame = math.floor(vim.loop.now() / 100) % #frames + 1
+						local frame = math.floor(vim.uv.now() / 100) % #frames + 1
 						return "󰐻 " .. frames[frame]
 					end
 					return "󰐻 " .. count
@@ -283,6 +283,7 @@ return {
 		},
 		opts = {
 			lsp = {
+				signature = { enabled = false },
 				-- override markdown rendering so that cmp and other plugins use Treesitter
 				override = {
 					["vim.lsp.util.convert_input_to_markdown_lines"] = true,
@@ -295,7 +296,7 @@ return {
 				command_palette = true, -- position the cmdline and popupmenu together
 				long_message_to_split = true, -- long messages will be sent to a split
 				inc_rename = false, -- enables an input dialog for inc-rename.nvim
-				lsp_doc_border = false, -- add a border to hover docs and signature help
+				lsp_doc_border = true, -- add a border to hover docs and signature help
 			},
 		},
 	},

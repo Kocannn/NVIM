@@ -127,7 +127,7 @@ if vim.fn.executable("lazygit") == 1 then
     Snacks.picker.git_log_file()
   end, { desc = "Git Current File History" })
   map("n", "<leader>gl", function()
-    Snacks.picker.git_log({ cwd = LazyVim.root.git() })
+    Snacks.picker.git_log({ cwd = vim.uv.cwd() })
   end, { desc = "Git Log" })
   map("n", "<leader>gL", function()
     Snacks.picker.git_log()

@@ -2,7 +2,6 @@ return {
 	{
 		"hrsh7th/nvim-cmp",
 		event = "InsertEnter",
-		lazy = false,
 		dependencies = {
 			{
 				"L3MON4D3/LuaSnip",

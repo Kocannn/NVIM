@@ -1,9 +1,7 @@
 return {
 	{
 		"supermaven-inc/supermaven-nvim",
-		lazy = false,
 		event = "InsertEnter",
-		disable_inline_completion = true,
 		config = function()
 			require("supermaven-nvim").setup({
 				keymaps = {
@@ -44,7 +42,12 @@ return {
 				auto_insert_mode = true,
 				question_header = " Yang Mulia Maha Raja " .. user .. " ",
 				answer_header = "  Copilot ",
-				window = { width = 0.4 },
+				window = { 
+					layout = "float",
+					width = 0.8,
+					height = 0.8,
+					border = "rounded",
+				},
 			}
 		end,
 		keys = {
@@ -70,7 +73,7 @@ return {
 				"<leader>aq",
 				function()
 					vim.ui.input({ prompt = "Quick Chat: " }, function(input)
-						if input ~= "" then
+						if input and input ~= "" then
 							require("CopilotChat").ask(input)
 						end
 					end)
@@ -94,6 +97,7 @@ return {
 				callback = function()
 					vim.opt_local.relativenumber = false
 					vim.opt_local.number = false
+					vim.opt_local.winhighlight = "Normal:Normal,FloatBorder:FloatBorder,NormalFloat:Normal"
 				end,
 			})
 			chat.setup(opts)

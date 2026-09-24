@@ -1,5 +1,7 @@
 dofile(vim.g.base46_cache .. "telescope")
 
+local actions = require("telescope.actions")
+
 return {
 	defaults = {
 		prompt_prefix = "   ",
@@ -19,12 +21,12 @@ return {
 		},
 		mappings = {
 			n = {
-				["q"] = require("telescope.actions").close,
-				["l"] = require("telescope.actions").select_default,
+				["q"] = actions.close,
+				["l"] = actions.select_default,
 			},
 			i = {
-				["<C-j>"] = require("telescope.actions").move_selection_next,
-				["<C-k>"] = require("telescope.actions").move_selection_previous,
+				["<C-j>"] = actions.move_selection_next,
+				["<C-k>"] = actions.move_selection_previous,
 				["<C-n>"] = false,
 				["<C-p>"] = false,
 			},
@@ -55,23 +57,27 @@ return {
 			mappings = {
 				["n"] = {
 					-- your custom normal mode mappings
-					["n"] = require("telescope").extensions.file_browser.actions.create,
-					["h"] = require("telescope").extensions.file_browser.actions.goto_parent_dir,
+					["n"] = function(prompt_bufnr)
+						require("telescope").extensions.file_browser.actions.create(prompt_bufnr)
+					end,
+					["h"] = function(prompt_bufnr)
+						require("telescope").extensions.file_browser.actions.goto_parent_dir(prompt_bufnr)
+					end,
 					["/"] = function()
 						vim.cmd("startinsert")
 					end,
 					["<C-u>"] = function(prompt_bufnr)
 						for _ = 1, 10 do
-							require("telescope.actions").move_selection_previous(prompt_bufnr)
+							actions.move_selection_previous(prompt_bufnr)
 						end
 					end,
 					["<C-d>"] = function(prompt_bufnr)
 						for _ = 1, 10 do
-							require("telescope.actions").move_selection_next(prompt_bufnr)
+							actions.move_selection_next(prompt_bufnr)
 						end
 					end,
-					["<PageUp>"] = require("telescope.actions").preview_scrolling_up,
-					["<PageDown>"] = require("telescope.actions").preview_scrolling_down,
+					["<PageUp>"] = actions.preview_scrolling_up,
+					["<PageDown>"] = actions.preview_scrolling_down,
 				},
 			},
 		},

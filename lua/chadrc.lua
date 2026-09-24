@@ -9,10 +9,14 @@ M.base46 = {
 	theme = "solarized_dark",
 	transparency = true,
 
-	-- hl_override = {
-	-- 	Comment = { italic = true },
-	-- 	["@comment"] = { italic = true },
-	-- },
+	hl_override = {
+		Comment = { italic = true },
+		["@comment"] = { italic = true },
+		MarkdownCode = { bg = "NONE" },
+		MarkdownCodeBlock = { bg = "NONE" },
+		["@markup.raw.block.markdown"] = { bg = "NONE" },
+		["@markup.raw.markdown_inline"] = { bg = "NONE" },
+	},
 }
 
 M.nvdash = {

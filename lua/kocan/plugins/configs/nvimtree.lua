@@ -2,17 +2,13 @@ dofile(vim.g.base46_cache .. "nvimtree")
 
 local function custom_on_attach(bufnr)
   local api = require("nvim-tree.api")
--- Ini penting: panggil default keybindings dulu
-  require("nvim-tree.api").config.mappings.default_on_attach(bufnr)
+  -- Panggil default keybindings dulu
+  api.config.mappings.default_on_attach(bufnr)
 
-  -- Setelah itu baru override atau hapus key yang tidak diinginkan
+  -- Override key yang tidak diinginkan
   vim.keymap.set("n", "s", "", { buffer = bufnr })
-
-  vim.keymap.set("n", "l", "", {buffer = bufnr})
-  vim.keymap.set("n", "l", api.node.open.edit, {buffer = bufnr})
-
-  vim.keymap.set("n", "h", "", {buffer = bufnr})
-  vim.keymap.set("n", "h", api.node.navigate.parent_close, {buffer = bufnr})
+  vim.keymap.set("n", "l", api.node.open.edit, { buffer = bufnr, desc = "Open" })
+  vim.keymap.set("n", "h", api.node.navigate.parent_close, { buffer = bufnr, desc = "Close parent" })
 end
 
 return {
