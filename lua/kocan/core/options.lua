@@ -59,6 +59,12 @@ local sep = is_windows and "\\" or "/"
 local delim = is_windows and ";" or ":"
 vim.env.PATH = table.concat({ vim.fn.stdpath("data"), "mason", "bin" }, sep) .. delim .. vim.env.PATH
 
+-- UI enhancements
+o.pumheight = 15 -- popup menu height
+o.scrolloff = 8 -- keep cursor away from edge
+o.sidescrolloff = 8
+o.termguicolors = true
+
 o.wrap = false
 
 vim.opt.relativenumber = true

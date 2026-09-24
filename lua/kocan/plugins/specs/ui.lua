@@ -35,10 +35,50 @@ return {
 					q = "cancel",
 				},
 			},
+			-- Smooth scrolling animation
+			scroll = { enabled = false },
+			-- Indentation guides with animation
+			indent = {
+				enabled = true,
+				animate = {
+					enabled = true,
+					style = "out",
+					easing = "linear",
+					duration = { step = 20, total = 200 },
+				},
+			},
+			-- Notification system
+			notifier = {
+				enabled = true,
+				timeout = 3000,
+				style = "compact",
+			},
+			-- Scope highlighting
+			scope = { enabled = true },
+			-- Word highlighting under cursor
+			words = { enabled = true },
+			-- Zen mode
+			zen = { enabled = true },
 		},
 		config = function(_, opts)
 			require("snacks").setup(opts)
 		end,
+		keys = {
+			{
+				"<leader>z",
+				function()
+					require("snacks").zen()
+				end,
+				desc = "Toggle Zen Mode",
+			},
+			{
+				"<leader>n",
+				function()
+					require("snacks").notifier.show_history()
+				end,
+				desc = "Notification History",
+			},
+		},
 	},
 	{
 		"nvim-lualine/lualine.nvim",
@@ -59,6 +99,7 @@ return {
 				magenta = "#c678dd",
 				blue = "#51afef",
 				red = "#ec5f67",
+				teal = "#1abc9c",
 			}
 
 			local conditions = {
@@ -75,13 +116,64 @@ return {
 				end,
 			}
 
+			-- Mode names for display
+			local mode_names = {
+				n = "NORMAL",
+				i = "INSERT",
+				v = "VISUAL",
+				[""] = "V-BLOCK",
+				V = "V-LINE",
+				c = "COMMAND",
+				no = "N-OP",
+				s = "SELECT",
+				S = "S-LINE",
+				[""] = "S-BLOCK",
+				ic = "INS-COMP",
+				R = "REPLACE",
+				Rv = "V-REPLACE",
+				cv = "VIM-EX",
+				ce = "EX",
+				r = "PROMPT",
+				rm = "MORE",
+				["r?"] = "CONFIRM",
+				["!"] = "SHELL",
+				t = "TERMINAL",
+			}
+
+			local mode_color = {
+				n = colors.blue,
+				i = colors.green,
+				v = colors.magenta,
+				[""] = colors.magenta,
+				V = colors.magenta,
+				c = colors.yellow,
+				no = colors.red,
+				s = colors.orange,
+				S = colors.orange,
+				[""] = colors.orange,
+				ic = colors.yellow,
+				R = colors.red,
+				Rv = colors.red,
+				cv = colors.red,
+				ce = colors.red,
+				r = colors.cyan,
+				rm = colors.cyan,
+				["r?"] = colors.cyan,
+				["!"] = colors.red,
+				t = colors.teal,
+			}
+
 			local config = {
 				options = {
 					component_separators = "",
 					section_separators = "",
+					globalstatus = true,
 					theme = {
 						normal = { c = { fg = colors.fg, bg = colors.bg } },
 						inactive = { c = { fg = colors.fg, bg = colors.bg } },
+					},
+					disabled_filetypes = {
+						statusline = { "NvimTree", "nvdash" },
 					},
 				},
 				sections = {
@@ -110,110 +202,58 @@ return {
 				table.insert(config.sections.lualine_x, component)
 			end
 
+			-- Left edge
 			ins_left({
 				function()
 					return "▊"
 				end,
-				color = { fg = colors.blue },
+				color = function()
+					return { fg = mode_color[vim.fn.mode()] or colors.blue }
+				end,
 				padding = { left = 0, right = 1 },
 			})
 
+			-- Mode indicator with text
 			ins_left({
 				function()
-					return ""
+					local mode = vim.fn.mode()
+					return "  " .. (mode_names[mode] or mode)
 				end,
 				color = function()
-					local mode_color = {
-						n = colors.red,
-						i = colors.green,
-						v = colors.blue,
-						["\22"] = colors.blue,
-						V = colors.blue,
-						c = colors.magenta,
-						no = colors.red,
-						s = colors.orange,
-						S = colors.orange,
-						["\19"] = colors.orange,
-						ic = colors.yellow,
-						R = colors.violet,
-						Rv = colors.violet,
-						cv = colors.red,
-						ce = colors.red,
-						r = colors.cyan,
-						rm = colors.cyan,
-						["r?"] = colors.cyan,
-						["!"] = colors.red,
-						t = colors.red,
-					}
-					return { fg = mode_color[vim.fn.mode()] }
+					return { fg = mode_color[vim.fn.mode()] or colors.blue, gui = "bold" }
 				end,
 				padding = { right = 1 },
 			})
 
-			ins_left({ "filesize", cond = conditions.buffer_not_empty })
-			ins_left({ "filename", cond = conditions.buffer_not_empty, color = { fg = colors.magenta, gui = "bold" } })
-			ins_left({ "location" })
-			ins_left({ "progress", color = { fg = colors.fg, gui = "bold" } })
+			-- File info
 			ins_left({
-				"diagnostics",
-				sources = { "nvim_diagnostic" },
-				symbols = { error = " ", warn = " ", info = " " },
-				diagnostics_color = {
-					error = { fg = colors.red },
-					warn = { fg = colors.yellow },
-					info = { fg = colors.cyan },
+				"filetype",
+				icon_only = true,
+				padding = { left = 1, right = 0 },
+			})
+			ins_left({
+				"filename",
+				cond = conditions.buffer_not_empty,
+				color = { fg = colors.magenta, gui = "bold" },
+				symbols = {
+					modified = " ●",
+					readonly = " 󰌾",
+					unnamed = "[No Name]",
+					newfile = "[New]",
 				},
 			})
 
+			-- Git branch
 			ins_left({
-				function()
-					return "%="
-				end,
-			})
-
-			ins_left({
-				function()
-					local msg = "No Active Lsp"
-					local buf_ft = vim.api.nvim_get_option_value("filetype", { buf = 0 })
-					local clients = vim.lsp.get_clients()
-					if next(clients) == nil then
-						return msg
-					end
-					for _, client in ipairs(clients) do
-						local filetypes = client.config.filetypes
-						if filetypes and vim.fn.index(filetypes, buf_ft) ~= -1 then
-							return client.name
-						end
-					end
-					return msg
-				end,
-				icon = " LSP:",
-				color = { fg = "#ffffff", gui = "bold" },
-			})
-
-			ins_right({
-				"o:encoding",
-				fmt = string.upper,
-				cond = conditions.hide_in_width,
-				color = { fg = colors.green, gui = "bold" },
-			})
-
-			ins_right({
-				"fileformat",
-				fmt = string.upper,
-				icons_enabled = false,
-				color = { fg = colors.green, gui = "bold" },
-			})
-
-			ins_right({
 				"branch",
-				icon = "",
+				icon = "",
 				color = { fg = colors.violet, gui = "bold" },
 			})
 
-			ins_right({
+			-- Diff
+			ins_left({
 				"diff",
-				symbols = { added = " ", modified = "󰝤 ", removed = " " },
+				symbols = { added = " ", modified = " ", removed = " " },
 				diff_color = {
 					added = { fg = colors.green },
 					modified = { fg = colors.orange },
@@ -222,6 +262,78 @@ return {
 				cond = conditions.hide_in_width,
 			})
 
+			-- Center separator
+			ins_left({
+				function()
+					return "%="
+				end,
+			})
+
+			-- LSP server info (center)
+			ins_left({
+				function()
+					local clients = vim.lsp.get_clients({ bufnr = 0 })
+					if #clients == 0 then
+						return "󰒏 No LSP"
+					end
+					local names = {}
+					for _, client in ipairs(clients) do
+						table.insert(names, client.name)
+					end
+					return "󰒋 " .. table.concat(names, ", ")
+				end,
+				color = function()
+					local clients = vim.lsp.get_clients({ bufnr = 0 })
+					if #clients == 0 then
+						return { fg = "#6c7086", gui = "italic" }
+					end
+					return { fg = colors.teal, gui = "bold" }
+				end,
+			})
+
+			-- Diagnostics
+			ins_right({
+				"diagnostics",
+				sources = { "nvim_diagnostic" },
+				symbols = { error = " ", warn = " ", info = " ", hint = "󰌵 " },
+				diagnostics_color = {
+					error = { fg = colors.red },
+					warn = { fg = colors.yellow },
+					info = { fg = colors.cyan },
+					hint = { fg = colors.green },
+				},
+			})
+
+			-- Copilot status
+			ins_right({
+				function()
+					local ok, copilot = pcall(require, "copilot.api")
+					if not ok then
+						return ""
+					end
+					local status = copilot.status.data
+					if status.status == "Normal" then
+						return " "
+					elseif status.status == "InProgress" then
+						return " "
+					else
+						return " "
+					end
+				end,
+				color = function()
+					local ok, copilot = pcall(require, "copilot.api")
+					if ok and copilot.status.data.status == "Normal" then
+						return { fg = colors.green }
+					end
+					return { fg = "#6c7086" }
+				end,
+				cond = function()
+					local ok = pcall(require, "copilot.api")
+					return ok
+				end,
+			})
+
+			-- MCP Hub status
 			ins_right({
 				function()
 					if not vim.g.loaded_mcphub then
@@ -256,11 +368,36 @@ return {
 				end,
 			})
 
+			-- Encoding + format (compact)
+			ins_right({
+				function()
+					local enc = vim.bo.fileencoding ~= "" and vim.bo.fileencoding or vim.o.encoding
+					local fmt = vim.bo.fileformat
+					return enc:upper() .. " [" .. fmt:upper() .. "]"
+				end,
+				cond = conditions.hide_in_width,
+				color = { fg = colors.green },
+			})
+
+			-- Location & progress (compact)
+			ins_right({
+				function()
+					local cur = vim.fn.line(".")
+					local total = vim.fn.line("$")
+					local pct = math.floor(cur / total * 100)
+					return string.format("󰉸 %d:%d (%d%%%%)", cur, vim.fn.col("."), pct)
+				end,
+				color = { fg = colors.fg, gui = "bold" },
+			})
+
+			-- Right edge
 			ins_right({
 				function()
 					return "▊"
 				end,
-				color = { fg = colors.blue },
+				color = function()
+					return { fg = mode_color[vim.fn.mode()] or colors.blue }
+				end,
 				padding = { left = 1 },
 			})
 
@@ -297,6 +434,39 @@ return {
 				long_message_to_split = true, -- long messages will be sent to a split
 				inc_rename = false, -- enables an input dialog for inc-rename.nvim
 				lsp_doc_border = true, -- add a border to hover docs and signature help
+			},
+			views = {
+				cmdline_popup = {
+					border = { style = "rounded" },
+					position = { row = "40%", col = "50%" },
+					size = { width = 60, height = "auto" },
+				},
+				popupmenu = {
+					relative = "editor",
+					position = { row = "45%", col = "50%" },
+					size = { width = 60, height = 10 },
+					border = { style = "rounded" },
+				},
+			},
+		},
+	},
+	-- CSS/Tailwind color previewer
+	{
+		"NvChad/nvim-colorizer.lua",
+		event = "User FilePost",
+		opts = {
+			user_default_options = {
+				tailwind = true,
+				css = true,
+				css_fn = true,
+				mode = "virtualtext",
+				virtualtext = "■",
+				virtualtext_inline = true,
+			},
+			filetypes = {
+				"*",
+				"!lazy",
+				"!mason",
 			},
 		},
 	},
